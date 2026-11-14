@@ -22,10 +22,12 @@ unprocessed_orders: list[str] = []
 max_unprocessed_orders: int = 41
 
 def generate_max_unprocessed_orders(n: int) -> int:
+    """number generator for function"""
     for i in range(1, n):
         yield i
 
 def create_unprocessed_order(month: int, year: int, clients: list[str], shop_items_keys: list[str], shop_items: list[str]) -> str:
+    """create order to be added onto the list of orders"""
     
     for i in generate_max_unprocessed_orders(max_unprocessed_orders):
         day: int = i
