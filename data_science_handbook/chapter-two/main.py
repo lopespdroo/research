@@ -62,16 +62,13 @@ def main():
                                     "donut" : 5.50,
                                     "bolo de cenoura" : 13.75,
                                     "bolo de chocolate" : 15.50}
-
-
     shop_items_keys: list[str] = list(shop_items.keys())
-    print(shop_items_keys)
 
     create_unprocessed_order(month, year, clients, shop_items_keys, shop_items)
 
-    bad_format_str1: list[str] = ["2026-2-11 | abc | bolo de chocolate 1x | 15.50"]
-    bad_format_str2: list[str] = ["2026-2-12 |  |  | 8"]
-    bad_format_str3: list[str] = [" | diego | 123 | sete"]
+    bad_format_str1: str = "2026-2-11 | abc | bolo de chocolate 1x | 15.50"
+    bad_format_str2: str = "2026-2-12 |  |  | 8"
+    bad_format_str3: str = " | diego | 123 | sete"
 
     add_unprocessed_order(bad_format_str1, unprocessed_orders)
     add_unprocessed_order(bad_format_str2, unprocessed_orders)
