@@ -173,6 +173,25 @@ def main():
     print(f"Clients who bought both: {coffeAndDonutOrders}")
 
     print("---------------------")
+    #clients listed by revenue
+    mostSpenderstoLeastSpenders = sorted(revenuePerClient.items(),
+                                  key=lambda revenuePerClient:revenuePerClient[1],
+                                  reverse=True)
+
+    print("List of clients from who spent the most to who spent the least: ")
+    for item in mostSpenderstoLeastSpenders:
+        print(item)
+    
+    print("---------------------")
+    #list comprehension for orders above 20
+    ordersAbove20 = [order.price for order in orders if order.price > 20]
+    print(f"List of orders above R$ 20.00: {ordersAbove20}")
+
+    print("---------------------")
+    #dict comprehension for total number of orders from each client
+    totalOrdersByClient = {client: sum(order.qtt for order in orders if order.client == client)
+                           for client in clients}
+    print(f"Number of orders from each client: {totalOrdersByClient}")
 
 if __name__ == "__main__":
     main()
