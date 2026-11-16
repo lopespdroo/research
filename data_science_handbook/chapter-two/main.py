@@ -153,6 +153,26 @@ def main():
         print(f"Total revenue from {client.capitalize()}: {revenuePerClient[client]}")
 
     print("---------------------")
+    #sets of clients who bought coffe and donuts separatedly and both together
+    coffeOrders = set()
+    donutOrders = set()
+    coffeAndDonutOrders = set()
+
+    for client in itemsBoughtPerClient:
+        if "espresso" in itemsBoughtPerClient[client] or "cappucino" in itemsBoughtPerClient[client] or "latte" in itemsBoughtPerClient[client]:
+               coffeOrders.add(client)
+        if "donut" in itemsBoughtPerClient[client]:
+            donutOrders.add(client)
+
+    for client in clients:
+        if client in coffeOrders and client in donutOrders:
+            coffeAndDonutOrders.add(client)
+
+    print(f"Clients who bought coffe: {coffeOrders}")
+    print(f"Clients who bought donut: {donutOrders}")
+    print(f"Clients who bought both: {coffeAndDonutOrders}")
+
+    print("---------------------")
 
 if __name__ == "__main__":
     main()
