@@ -122,7 +122,20 @@ def main():
     random.shuffle(unprocessed_orders)
 
     not_valid_orders = []
-    pedidos = list(valid_orders(unprocessed_orders, not_valid_orders))
+    orders = list(valid_orders(unprocessed_orders, not_valid_orders))
+
+    #----ANALYSING----
+    soldItems: list[int] = []
+
+    #top three sellers 
+    for order in orders:
+        soldItems.append(order.item)
+
+    soldItems = Counter(soldItems)
+
+    print(f"Top 3 sellers: {soldItems.most_common(3)}")
+    
+    print("---------------------")
 
 if __name__ == "__main__":
     main()
