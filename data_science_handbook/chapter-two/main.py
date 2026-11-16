@@ -136,6 +136,23 @@ def main():
     print(f"Top 3 sellers: {soldItems.most_common(3)}")
     
     print("---------------------")
+    #items bought from each client and total revenue gathered from each client
+    itemsBoughtPerClient = defaultdict(list)
+    revenuePerClient = defaultdict(float)
+
+    for order in orders:
+        itemsBoughtPerClient[order.client].append(order.item)
+        revenuePerClient[order.client] += order.price
+
+    for client in itemsBoughtPerClient:
+        print(f"Items bought from {client}: {itemsBoughtPerClient[client]}")
+    
+    print("---------------------")
+
+    for client in revenuePerClient:
+        print(f"Total revenue from {client.capitalize()}: {revenuePerClient[client]}")
+
+    print("---------------------")
 
 if __name__ == "__main__":
     main()
