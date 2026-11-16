@@ -8,15 +8,13 @@ random.seed(42)
 
 #----GENERATING LOGS----
 
-year: int = 2026
+YEAR: int = 2026
 month: int = 1
 
-def verify_day_and_month(day: int, month: int) -> int:
-    """updates the day of the month. if greater than 31, resets to 1"""
-    if day <= 31:
-        pass
-    else:
-        month += 1
+def verifyDayAndMonth(day: int, month: int) -> int:
+    """Updates the day of the month. If greater than 31, resets to 1."""
+    if day > 31:
+        month +=1
         day -= 31
 
     return day, month
@@ -34,10 +32,8 @@ def create_unprocessed_order(month: int, year: int, clients: list[str], shop_ite
     
     for i in generate_max_unprocessed_orders(max_unprocessed_orders):
         day: int = i
-        day_safe : int
-        month_safe : int
 
-        day_safe, month_safe = verify_day_and_month(day, month)
+        day_safe, month_safe = verifyDayAndMonth(day, month)
         client: str = random.choice(clients)
         shop_item: str = random.choice(shop_items_keys)
         qtd: int = random.randint(1, 3)
@@ -119,7 +115,7 @@ def main():
                                     "bolo de chocolate" : 15.50}
     shop_items_keys: list[str] = list(shop_items.keys())
 
-    create_unprocessed_order(month, year, clients, shop_items_keys, shop_items)
+    create_unprocessed_order(month, YEAR, clients, shop_items_keys, shop_items)
 
     for i in range(3):
         badFormattedLog = createBadFormattedLog(unprocessed_orders)
@@ -129,7 +125,7 @@ def main():
 
     not_valid_orders = []
     orders = list(valid_orders(unprocessed_orders, not_valid_orders))
-    
+
     #----ANALYSING----
     soldItems: list[int] = []
 
