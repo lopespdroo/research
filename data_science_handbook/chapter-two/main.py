@@ -7,7 +7,6 @@ from typing import List, Optional
 random.seed(42)
 
 #----GENERATING LOGS----
-
 YEAR: int = 2026
 month: int = 1
 
@@ -20,17 +19,15 @@ def verifyDayAndMonth(day: int, month: int) -> int:
     return day, month
 
 unprocessed_orders: list[str] = []
-max_unprocessed_orders: int = 41
+MAX_LOGS : int = 41
 
-def generate_max_unprocessed_orders(n: int) -> int:
-    """number generator for function"""
+def maxLogsGenerator(n: int) -> int:
     for i in range(1, n):
         yield i
 
-def create_unprocessed_order(month: int, year: int, clients: list[str], shop_items_keys: list[str], shop_items: list[str]) -> str:
-    """create order to be added onto the list of orders"""
-    
-    for i in generate_max_unprocessed_orders(max_unprocessed_orders):
+def createLog(month: int, year: int, clients: list[str], shop_items_keys: list[str], shop_items: list[str]) -> str:
+    """Create log to be added onto the list of orders."""
+    for i in maxLogsGenerator(MAX_LOGS):
         day: int = i
 
         day_safe, month_safe = verifyDayAndMonth(day, month)
@@ -41,9 +38,7 @@ def create_unprocessed_order(month: int, year: int, clients: list[str], shop_ite
 
         order: str = (f"{year}-{month_safe}-{day_safe} | {client} | {shop_item} {qtd}x | {shop_item_multiplied}")
 
-        add_unprocessed_order(order, unprocessed_orders)
-
-    return
+    return order
 
 def createBadFormattedLog(unprocessed_orders: list[str])-> str:
     log = str(random.sample(unprocessed_orders, k=1))
@@ -57,7 +52,7 @@ def createBadFormattedLog(unprocessed_orders: list[str])-> str:
 
     return log
 
-def add_unprocessed_order(order: str, unprocessed_orders: list[str]):
+def addLog(order: str, unprocessed_orders: list[str]):
     return unprocessed_orders.append(order)
 
 #----MODELLING----
@@ -101,11 +96,7 @@ def parse_line(line: str)-> Order:
 
 def main():
     
-    clients: list[str] = ["ana",
-                          "bruno",
-                          "carla",
-                          "diego",
-                          "elisa"]
+    clients: list[str] = ["ana", "bruno", "carla", "diego", "elisa"]
 
     shop_items: dict[str, float] = {"latte" : 9.50,
                                     "espresso" : 10,
@@ -115,11 +106,13 @@ def main():
                                     "bolo de chocolate" : 15.50}
     shop_items_keys: list[str] = list(shop_items.keys())
 
-    create_unprocessed_order(month, YEAR, clients, shop_items_keys, shop_items)
+    for i in maxLogsGenerator(MAX_LOGS):
+        line = createLog(month, YEAR, clients, shop_items_keys, shop_items)
+        addLog(line, unprocessed_orders)
 
     for i in range(3):
         badFormattedLog = createBadFormattedLog(unprocessed_orders)
-        add_unprocessed_order(badFormattedLog, unprocessed_orders)
+        addLog(badFormattedLog, unprocessed_orders)
 
     random.shuffle(unprocessed_orders)
 
