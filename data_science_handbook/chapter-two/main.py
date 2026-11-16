@@ -18,7 +18,7 @@ def verifyDayAndMonth(day: int, month: int) -> int:
 
     return day, month
 
-unprocessed_orders: list[str] = []
+logs : list[str] = []
 MAX_LOGS : int = 41
 
 def maxLogsGenerator(n: int) -> int:
@@ -40,8 +40,9 @@ def createLog(month: int, year: int, clients: list[str], shop_items_keys: list[s
 
     return order
 
-def createBadFormattedLog(unprocessed_orders: list[str])-> str:
-    log = str(random.sample(unprocessed_orders, k=1))
+def createBadFormattedLog(logs: list[str])-> str:
+    """Create a log with an empty space inside."""
+    log = str(random.sample(logs, k=1))
     chunks = log.split("|")
 
     number = random.randint(0, 3)
@@ -52,11 +53,10 @@ def createBadFormattedLog(unprocessed_orders: list[str])-> str:
 
     return log
 
-def addLog(order: str, unprocessed_orders: list[str]):
-    return unprocessed_orders.append(order)
+def addLog(order: str, logs: list[str]):
+    return logs.append(order)
 
 #----MODELLING----
-
 class Order():
     
     def __init__(self, date, client, item, qtt, price):
@@ -69,17 +69,19 @@ class Order():
     def __repr__(self):
         return f"Order(date={self.date!r},(client={self.client!r}, (item={self.item!r}, (qtt={self.qtt!r}, (price={self.price})"
 
-def valid_orders(unprocessed_orders : List[str], not_valid_orders: List[str])-> Iterator[Order]:
-    for line in unprocessed_orders:
+def validateOrder(logs: List[str], INVALID_ORDERS: List[str])-> Iterator[Order]:
+    """Makes sure if the log is in the good shape and yields the order to a list."""
+    for line in logs:
         try:
-            order = parse_line(line)
+            order = parseLine(line)
         except ValueError:
-            not_valid_orders.append(line)
+            INVALID_ORDERS.append(line)
             continue
         else:
             yield order
 
-def parse_line(line: str)-> Order:
+def parseLine(line: str)-> Order:
+    """Inspect the log line and returns the Order object of it."""
     match = re.match(r"(\d{4}-\d{1,2}-\d{1,2})\s*\|\s*(\w+)\s*\|\s*(.+?)\s+(\d+)x\s*\|\s*(\d+(?:\.\d+)?)", line)
         
     if not match:
@@ -97,7 +99,6 @@ def parse_line(line: str)-> Order:
 def main():
     
     clients: list[str] = ["ana", "bruno", "carla", "diego", "elisa"]
-
     shop_items: dict[str, float] = {"latte" : 9.50,
                                     "espresso" : 10,
                                     "cappuccino" : 8,
@@ -108,22 +109,22 @@ def main():
 
     for i in maxLogsGenerator(MAX_LOGS):
         line = createLog(month, YEAR, clients, shop_items_keys, shop_items)
-        addLog(line, unprocessed_orders)
+        addLog(line, logs)
 
     for i in range(3):
-        badFormattedLog = createBadFormattedLog(unprocessed_orders)
-        addLog(badFormattedLog, unprocessed_orders)
+        badFormattedLog = createBadFormattedLog(logs)
+        addLog(badFormattedLog, logs)
 
-    random.shuffle(unprocessed_orders)
+    random.shuffle(logs)
 
-    not_valid_orders = []
-    orders = list(valid_orders(unprocessed_orders, not_valid_orders))
+    INVALID_ORDERS = []
+    ORDERS = list(validateOrder(logs, INVALID_ORDERS))
 
     #----ANALYSING----
     soldItems: list[int] = []
 
     #top three sellers 
-    for order in orders:
+    for order in ORDERS:
         soldItems.append(order.item)
 
     soldItems = Counter(soldItems)
@@ -135,7 +136,7 @@ def main():
     itemsBoughtPerClient = defaultdict(list)
     revenuePerClient = defaultdict(float)
 
-    for order in orders:
+    for order in ORDERS:
         itemsBoughtPerClient[order.client].append(order.item)
         revenuePerClient[order.client] += order.price
 
@@ -179,12 +180,12 @@ def main():
     
     print("---------------------")
     #list comprehension for orders above 20
-    ordersAbove20 = [order.price for order in orders if order.price > 20]
+    ordersAbove20 = [order.price for order in ORDERS if order.price > 20]
     print(f"List of orders above R$ 20.00: {ordersAbove20}")
 
     print("---------------------")
     #dict comprehension for total number of orders from each client
-    totalOrdersByClient = {client: sum(order.qtt for order in orders if order.client == client)
+    totalOrdersByClient = {client: sum(order.qtt for order in ORDERS if order.client == client)
                            for client in clients}
     print(f"Number of orders from each client: {totalOrdersByClient}")
 
