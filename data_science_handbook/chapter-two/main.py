@@ -49,6 +49,18 @@ def create_unprocessed_order(month: int, year: int, clients: list[str], shop_ite
 
     return
 
+def createBadFormattedLog(unprocessed_orders: list[str])-> str:
+    log = str(random.sample(unprocessed_orders, k=1))
+    chunks = log.split("|")
+
+    number = random.randint(0, 3)
+
+    for i in range(len(log)):
+        if i == number:
+            log[i] == " "
+
+    return log
+
 def add_unprocessed_order(order: str, unprocessed_orders: list[str]):
     return unprocessed_orders.append(order)
 
@@ -92,6 +104,7 @@ def parse_line(line: str)-> Order:
     return order
 
 def main():
+    
     clients: list[str] = ["ana",
                           "bruno",
                           "carla",
@@ -108,22 +121,15 @@ def main():
 
     create_unprocessed_order(month, year, clients, shop_items_keys, shop_items)
 
-    #REFACTOR THIS LATER
-    #from here
-    bad_format_str1: str = "2026-2-11 | | bolo de chocolate 1x | 15.50"
-    bad_format_str2: str = "2026-2-12 |  |  | 8"
-    bad_format_str3: str = " | diego | 123 | sete"
-
-    add_unprocessed_order(bad_format_str1, unprocessed_orders)
-    add_unprocessed_order(bad_format_str2, unprocessed_orders)
-    add_unprocessed_order(bad_format_str3, unprocessed_orders)
-    #to here
+    for i in range(3):
+        badFormattedLog = createBadFormattedLog(unprocessed_orders)
+        add_unprocessed_order(badFormattedLog, unprocessed_orders)
 
     random.shuffle(unprocessed_orders)
 
     not_valid_orders = []
     orders = list(valid_orders(unprocessed_orders, not_valid_orders))
-
+    
     #----ANALYSING----
     soldItems: list[int] = []
 
