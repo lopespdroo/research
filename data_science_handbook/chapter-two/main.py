@@ -4,6 +4,10 @@ from collections import defaultdict, Counter
 from collections.abc import Iterator
 from typing import List, Optional
 
+# TO-DO
+# - add assertions
+# - add menu, if possible
+
 # ---- MACROS AND CONFIGURATION ----
 
 random.seed(42)
@@ -141,6 +145,20 @@ def main():
     INVALID_ORDERS: list[str] = []
     ORDERS = list(validateOrder(logs, INVALID_ORDERS))
 
+    # ---- TESTS FOR VALIDATION OF LOGS ----
+
+    assert len(logs) == 43
+    assert len(ORDERS) == 40
+    assert len(INVALID_ORDERS) == 3
+
+    assert len(ORDERS) + len(INVALID_ORDERS) == len(logs)
+
+    assert all(order.client in clients for order in ORDERS)
+
+    assert all(order.item in shop_items for order in ORDERS)
+
+    assert all(1 <= order.qtt <= 3 for order in ORDERS)
+
     # ---- ANALYSING ----
     soldItems: list[int] = []
 
@@ -189,6 +207,10 @@ def main():
     print(f"Clients who bought donut: {donutOrders}")
     print(f"Clients who bought both: {coffeAndDonutOrders}")
 
+    # ---- TESTS FOR SETS ----
+    assert coffeOrders >= coffeAndDonutOrders
+    assert donutOrders >= coffeAndDonutOrders
+
     print("---------------------")
     # clients listed by revenue
     mostSpenderstoLeastSpenders = sorted(revenuePerClient.items(),
@@ -209,6 +231,9 @@ def main():
     totalOrdersByClient = {client: sum(order.qtt for order in ORDERS if order.client == client)
                            for client in clients}
     print(f"Number of orders from each client: {totalOrdersByClient}")
+
+    print("---------------------")
+    print("All tests passed!")
 
 if __name__ == "__main__":
     main()
