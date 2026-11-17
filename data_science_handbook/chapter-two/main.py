@@ -4,8 +4,6 @@ from collections import defaultdict, Counter
 from collections.abc import Iterator
 from typing import List, Optional
 
-# TO-DO
-# - add assertions
 # - add menu, if possible
 
 # ---- MACROS AND CONFIGURATION ----
