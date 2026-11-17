@@ -30,7 +30,7 @@ class Order():
 
 #----GENERATING LOGS----
 
-def verifyDayAndMonth(day: int, month: int) -> int:
+def verify_date(day: int, month: int) -> int:
     """Updates the day of the month. If greater than 31, resets to 1."""
     if day > 31:
         month +=1
@@ -39,21 +39,21 @@ def verifyDayAndMonth(day: int, month: int) -> int:
     return day, month
 
 
-def maxLogsGenerator(n: int) -> int:
+def generator_logs(n: int) -> int:
     for i in range(1, n):
         yield i
 
 
-def createLog(month: int,
+def create_log(month: int,
               year: int,
               clients: list[str],
               shop_items: dict[str, float]
              ) -> str:
     """Create log to be added onto the list of orders."""
-    for i in maxLogsGenerator(MAX_LOGS):
+    for i in generator_logs(MAX_LOGS):
         day = i
 
-        day_safe, month_safe = verifyDayAndMonth(day, month)
+        day_safe, month_safe = verify_date(day, month)
         client = random.choice(clients)
         shop_item = random.choice(list(shop_items.keys()))
         qtd = random.randint(1, 3)
@@ -65,7 +65,7 @@ def createLog(month: int,
     return order
 
 
-def createBadFormattedLog(logs: list[str])-> str:
+def create_bad_formatted_log(logs: list[str])-> str:
     """Create a log with an empty space inside."""
     log = str(random.sample(logs, k=1))
     chunks = log.split("|")
@@ -79,16 +79,16 @@ def createBadFormattedLog(logs: list[str])-> str:
     return log
 
 
-def addLog(order: str, logs: list[str]):
+def add_log(order: str, logs: list[str]):
     return logs.append(order)
 
 # ---- VALIDATION AND PARSING
 
-def validateOrder(logs: List[str], INVALID_ORDERS: List[str])-> Iterator[Order]:
+def validate_order(logs: List[str], INVALID_ORDERS: List[str])-> Iterator[Order]:
     """Makes sure if the log is in the good shape and yields the order to a list."""
     for line in logs:
         try:
-            order = parseLine(line)
+            order = parse_line(line)
         except ValueError:
             INVALID_ORDERS.append(line)
             continue
@@ -96,7 +96,7 @@ def validateOrder(logs: List[str], INVALID_ORDERS: List[str])-> Iterator[Order]:
             yield order
 
 
-def parseLine(line: str)-> Order:
+def parse_line(line: str)-> Order:
     """Inspect the log line and returns the Order object of it."""
     match = re.match(r"(\d{4}-\d{1,2}-\d{1,2})\s*\|\s*(\w+)\s*\|\s*(.+?)\s+(\d+)x\s*\|\s*(\d+(?:\.\d+)?)", line)
         
@@ -128,20 +128,20 @@ def main():
 
     logs : list[str] = []
 
-    for i in maxLogsGenerator(MAX_LOGS):
-        line = createLog(month, YEAR, clients, shop_items)
-        addLog(line, logs)
+    for i in generator_logs(MAX_LOGS):
+        line = create_log(month, YEAR, clients, shop_items)
+        add_log(line, logs)
 
     for i in range(3):
-        badFormattedLog = createBadFormattedLog(logs)
-        addLog(badFormattedLog, logs)
+        bad_formatted_log = create_bad_formatted_log(logs)
+        add_log(bad_formatted_log, logs)
 
     random.shuffle(logs)
 
     # ---- VALIDATION OF LOGS ----
 
     INVALID_ORDERS: list[str] = []
-    ORDERS = list(validateOrder(logs, INVALID_ORDERS))
+    ORDERS = list(validate_order(logs, INVALID_ORDERS))
 
     # ---- TESTS FOR VALIDATION OF LOGS ----
 
@@ -158,77 +158,77 @@ def main():
     assert all(1 <= order.qtt <= 3 for order in ORDERS)
 
     # ---- ANALYSING ----
-    soldItems: list[int] = []
+    sold_items: list[int] = []
 
     # top three sellers 
     for order in ORDERS:
-        soldItems.append(order.item)
+        sold_items.append(order.item)
 
-    soldItems = Counter(soldItems)
+    sold_items= Counter(sold_items)
 
-    print(f"Top 3 sellers: {soldItems.most_common(3)}")
+    print(f"Top 3 sellers: {sold_items.most_common(3)}")
     
     print("---------------------")
     # items bought from each client and total revenue gathered from each client
-    itemsBoughtPerClient = defaultdict(list)
-    revenuePerClient = defaultdict(float)
+    items_bought_per_client = defaultdict(list)
+    revenue_per_client = defaultdict(float)
 
     for order in ORDERS:
-        itemsBoughtPerClient[order.client].append(order.item)
-        revenuePerClient[order.client] += order.price
+        items_bought_per_client[order.client].append(order.item)
+        revenue_per_client[order.client] += order.price
 
-    for client in itemsBoughtPerClient:
-        print(f"Items bought from {client}: {itemsBoughtPerClient[client]}")
+    for client in items_bought_per_client:
+        print(f"Items bought from {client}: {items_bought_per_client[client]}")
     
     print("---------------------")
 
-    for client in revenuePerClient:
-        print(f"Total revenue from {client.capitalize()}: {revenuePerClient[client]}")
+    for client in revenue_per_client:
+        print(f"Total revenue from {client.capitalize()}: {revenue_per_client[client]}")
 
     print("---------------------")
     # sets of clients who bought coffe and donuts separatedly and both together
-    coffeOrders = set()
-    donutOrders = set()
-    coffeAndDonutOrders = set()
+    coffe_orders = set()
+    donut_orders = set()
+    coffe_and_donut_orders = set()
 
-    for client in itemsBoughtPerClient:
-        if "espresso" in itemsBoughtPerClient[client] or "cappucino" in itemsBoughtPerClient[client] or "latte" in itemsBoughtPerClient[client]:
-               coffeOrders.add(client)
-        if "donut" in itemsBoughtPerClient[client]:
-            donutOrders.add(client)
+    for client in items_bought_per_client:
+        if "espresso" in items_bought_per_client[client] or "cappucino" in items_bought_per_client[client] or "latte" in items_bought_per_client[client]:
+               coffe_orders.add(client)
+        if "donut" in items_bought_per_client[client]:
+            donut_orders.add(client)
 
     for client in clients:
-        if client in coffeOrders and client in donutOrders:
-            coffeAndDonutOrders.add(client)
+        if client in coffe_orders and client in donut_orders:
+            coffe_and_donut_orders.add(client)
 
-    print(f"Clients who bought coffe: {coffeOrders}")
-    print(f"Clients who bought donut: {donutOrders}")
-    print(f"Clients who bought both: {coffeAndDonutOrders}")
+    print(f"Clients who bought coffe: {coffe_orders}")
+    print(f"Clients who bought donut: {donut_orders}")
+    print(f"Clients who bought both: {coffe_and_donut_orders}")
 
     # ---- TESTS FOR SETS ----
-    assert coffeOrders >= coffeAndDonutOrders
-    assert donutOrders >= coffeAndDonutOrders
+    assert coffe_orders >= coffe_and_donut_orders
+    assert donut_orders >= coffe_and_donut_orders
 
     print("---------------------")
     # clients listed by revenue
-    mostSpenderstoLeastSpenders = sorted(revenuePerClient.items(),
-                                  key=lambda revenuePerClient:revenuePerClient[1],
+    most_to_least_spenders = sorted(revenue_per_client.items(),
+                                  key=lambda revenue_per_client:revenue_per_client[1],
                                   reverse=True)
 
     print("List of clients from who spent the most to who spent the least: ")
-    for item in mostSpenderstoLeastSpenders:
+    for item in most_to_least_spenders:
         print(item)
     
     print("---------------------")
     # list comprehension for orders above 20
-    ordersAbove20 = [order.price for order in ORDERS if order.price > 20]
-    print(f"List of orders above R$ 20.00: {ordersAbove20}")
+    orders_above_20 = [order.price for order in ORDERS if order.price > 20]
+    print(f"List of orders above R$ 20.00: {orders_above_20}")
 
     print("---------------------")
     # dict comprehension for total number of orders from each client
-    totalOrdersByClient = {client: sum(order.qtt for order in ORDERS if order.client == client)
+    total_orders_by_client = {client: sum(order.qtt for order in ORDERS if order.client == client)
                            for client in clients}
-    print(f"Number of orders from each client: {totalOrdersByClient}")
+    print(f"Number of orders from each client: {total_orders_by_client}")
 
     print("---------------------")
     print("All tests passed!")
